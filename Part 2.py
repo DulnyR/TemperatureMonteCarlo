@@ -20,14 +20,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 def monteCarloSimulation(deltaT, numSamples):
-    temperatureChanges = np.random.normal(0, np.sqrt(deltaT), size = numSamples) 
-    timeOfMaximum = np.argmax(temperatureChanges) * deltaT
-    return timeOfMaximum
+    temperatures = np.cumsum(np.random.normal(0, np.sqrt(deltaT), (numSamples, int(1/deltaT))), axis=1)
+    timeOfMaximums = np.argmax(temperatures, axis=1) * deltaT
+    meanTimeOfMaximum = np.mean(timeOfMaximums)
+    return meanTimeOfMaximum
 
-deltaTValues = [0.01, 0.001, 0.0001, 0.00001]
-numSamples = 100000
+deltaTValues = [0.1, 0.01, 0.001, 0.0001, 0.00001]
+numSamples = 10000
 
 results = []
 
@@ -36,13 +36,13 @@ for deltaT in deltaTValues:
     results.append((deltaT, timeOfMaximum))
 
 for deltaT, timeOfMaximum in results:
-    print(f"Delta_t: {deltaT}, Proportion Positive: {timeOfMaximum}")
+    print(f"Delta_t: {deltaT}, Time Of Maximum: {timeOfMaximum}")
 
 plt.plot([result[0] for result in results], [result[1] for result in results], marker='o')
 plt.xlabel('Delta_t')
 plt.ylabel('Time Of Maximum Temperature')
 plt.xscale('log')  # Use log scale for better visualization
-plt.title('Estimation of Proportion of Positive Temperatures')
+plt.title('Estimation of Time Of Maximum Temperature')
 plt.show()
 
 

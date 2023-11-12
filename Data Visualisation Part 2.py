@@ -21,44 +21,33 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+def monteCarloSimulation(deltaT, currentTemperature):
+    temperatureChange = np.random.normal(0, np.sqrt(deltaT)) 
+    return currentTemperature + temperatureChange
 
-def monteCarloSimulation(deltaT, numSamples):
-    temperatures = np.zeros((numSamples, int(1/deltaT)))
-    proportions = np.zeros(numSamples)
-
-    for i in range(1, numSamples):
-        temperatureChanges = np.random.normal(0, np.sqrt(deltaT), int(1/deltaT))
-        temperatures[i, :] = np.cumsum(temperatureChanges)
-
-        positive_count = np.sum(temperatures[i, :] >= 0)
-        proportions[i] = positive_count / len(temperatureChanges)
-
-    proportionPositive = np.mean(proportions)
-    return proportions, proportionPositive
-
-deltaTValues = [0.01, 0.001, 0.0001, 0.00001]
-numSamples = 1000
-
+currentTemperature = 0
+maxTemperature = 0
+maxTemperatureTime = 0
 results = []
+timePoints = []
+deltaT = 0.01
 
-for deltaT in deltaTValues:
-    proportions, proportionPositive = monteCarloSimulation(deltaT, numSamples)
-    results.append((deltaT, proportionPositive))
+for i in range(1, int(1/deltaT)):
+    results.append(currentTemperature)
+    currentTemperature = monteCarloSimulation(deltaT, currentTemperature)
+    if (currentTemperature > maxTemperature):
+        maxTemperature = currentTemperature
+        maxTemperatureTime = i * deltaT
 
-for deltaT, proportionPositive in results:
-    print(f"Delta_t: {deltaT}, Proportion Positive: {proportionPositive}")
+for i in range(1, int(1/deltaT)):
+    timePoints.append(i * deltaT)
 
-fig, axes = plt.subplots(len(deltaTValues), 1, figsize=(10, 2 * len(deltaTValues)))
+print(maxTemperatureTime)
 
-for i, (deltaT, proportionPositive) in enumerate(results):
-    # Histogram
-    axes[i,].hist(proportions, bins=30, density=True, alpha=0.75)
-    axes[i].set_xlabel('Time')
-    axes[i].set_ylabel('Probability Density')
-    axes[i].set_title(f'Histogram (Delta_t={deltaT})')
-
-plt.tight_layout()
+plt.plot(timePoints, results, marker='o')
+plt.xlabel('Time')
+plt.ylabel('Temperature')
+plt.title('Monte Carlo Simulation of Temperature Changes')
 plt.show()
-
 
 
