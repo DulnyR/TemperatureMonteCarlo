@@ -43,22 +43,33 @@ results = []
 
 for deltaT in deltaTValues:
     proportions, proportionPositive = monteCarloSimulation(deltaT, numSamples)
-    results.append((deltaT, proportionPositive))
+    results.append((deltaT, proportionPositive, proportions))
 
-for deltaT, proportionPositive in results:
+for deltaT, proportionPositive, _ in results:
     print(f"Delta_t: {deltaT}, Proportion Positive: {proportionPositive}")
 
 fig, axes = plt.subplots(len(deltaTValues), 1, figsize=(10, 2 * len(deltaTValues)))
 
-for i, (deltaT, proportionPositive) in enumerate(results):
+all_bin_values = []
+
+for i, (deltaT, proportionPositive, proportions) in enumerate(results):
     # Histogram
-    axes[i,].hist(proportions, bins=30, density=True, alpha=0.75)
+    _, bin_edges, hist_values = axes[i].hist(proportions, bins=30, density=True, alpha=0.75)
+    
+    # Save bin values for each deltaT
+    all_bin_values.append((deltaT, hist_values, bin_edges))
+
     axes[i].set_xlabel('Time')
     axes[i].set_ylabel('Probability Density')
     axes[i].set_title(f'Histogram (Delta_t={deltaT})')
 
+for deltaT, hist_values, bin_edges in all_bin_values:
+    print(f'Delta_t={deltaT}, Bin Values: {hist_values}')
+
 plt.tight_layout()
 plt.show()
+
+
 
 
 

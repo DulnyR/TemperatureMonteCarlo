@@ -24,25 +24,29 @@ def monteCarloSimulation(deltaT, numSamples):
     temperatures = np.cumsum(np.random.normal(0, np.sqrt(deltaT), (numSamples, int(1/deltaT))), axis=1)
     timeOfMaximums = np.argmax(temperatures, axis=1) * deltaT
     meanTimeOfMaximum = np.mean(timeOfMaximums)
-    return meanTimeOfMaximum
+    return meanTimeOfMaximum, timeOfMaximums
 
-deltaTValues = [0.1, 0.01, 0.001, 0.0001, 0.00001]
-numSamples = 10000
+deltaTValues = [0.01, 0.001, 0.0001, 0.00001]
+numSamples = 1000
 
 results = []
 
 for deltaT in deltaTValues:
-    timeOfMaximum = monteCarloSimulation(deltaT, numSamples)
-    results.append((deltaT, timeOfMaximum))
+    meanTimeOfMaximum, timeOfMaximums = monteCarloSimulation(deltaT, numSamples)
+    results.append((deltaT, meanTimeOfMaximum, timeOfMaximums))
 
-for deltaT, timeOfMaximum in results:
+for deltaT, timeOfMaximum, _ in results:
     print(f"Delta_t: {deltaT}, Time Of Maximum: {timeOfMaximum}")
 
-plt.plot([result[0] for result in results], [result[1] for result in results], marker='o')
-plt.xlabel('Delta_t')
-plt.ylabel('Time Of Maximum Temperature')
-plt.xscale('log')  # Use log scale for better visualization
-plt.title('Estimation of Time Of Maximum Temperature')
-plt.show()
+fig, axes = plt.subplots(len(deltaTValues), 1, figsize=(10, 2 * len(deltaTValues)))
 
+for i, (deltaT, meantTimeOfMaximum, timeOfMaximums) in enumerate(results):
+    # Histogram
+    axes[i,].hist(timeOfMaximums, bins=30, density=True, alpha=0.75)
+    axes[i].set_xlabel('Time Maximum Temperature Reached')
+    axes[i].set_ylabel('Probability Density')
+    axes[i].set_title(f'Histogram (Delta_t={deltaT})')
+
+plt.tight_layout()
+plt.show()
 
