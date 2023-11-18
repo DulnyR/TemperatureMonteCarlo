@@ -63,9 +63,6 @@ for i, (deltaT, proportionPositive, proportions) in enumerate(results):
     axes[i].set_ylabel('Probability Density')
     axes[i].set_title(f'Histogram (Delta_t={deltaT})')
 
-for deltaT, hist_values, bin_edges in all_bin_values:
-    print(f'Delta_t={deltaT}, Bin Values: {hist_values}')
-
 plt.tight_layout()
 plt.show()
 
